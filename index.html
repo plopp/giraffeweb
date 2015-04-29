@@ -4,17 +4,10 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>InnoVentum Giraffe 2.0 Malmö</title>
-    <!-- Optional theme -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>    
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.0.1/sprintf.min.js"></script>
-
-    <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
-
-    <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
-
-    <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     <style>
       tbody th {
@@ -49,7 +42,6 @@
             url: '/history?reduce=True&group_level=4&descending=True&startkey=["solar",{},{},{}]',
             mimeType: 'application/json',
             success: function(data,jhqr,error){
-                //$("#todaySolar").html("Today: ")
                 todaySolar = data.rows[0].value.min;
             }
           })
@@ -63,7 +55,6 @@
 
         doAjaxCall();
         setInterval(doAjaxCall,10000);
-        //Startup view 24hr
 
         window.du = function(data){
           $("#tablebody").html("");
@@ -142,14 +133,6 @@
           }
           $("#tablebody").append(tstr);
 
-          //$("#tablebody").append("<tr><th>Air pressure:</th><th>"+sprintf("%.1f",data.anemo1.pressure)+" hPa</th></tr>");
-          //$("#tablebody").append("<tr><th>Air temperature:</th><th>"+sprintf("%.1f",data.anemo1.tempp)+" °C</th></tr>");
-          //$("#tablebody").append("<tr><th>Wind direction:</th><th>"+sprintf("%.1f",data.anemo1.dir)+"° <i id='arrow' class='glyphicon glyphicon-arrow-left' aria-hidden='true'></i></th></tr>");
-          //$("#tablebody").append("<tr><th>Sun insolation:</th><th>"+sprintf("%.1f",data.pyro.radiance)+" W/m²</th></tr>");
-          //$("#tablebody").append("<tr><th>Solar power:</th><th>"+sprintf("%.0f",data.solar.tot_act_power)+" W</th></tr>");
-          //$("#tablebody").append("<tr><th>Wind Power:</th><th>"+sprintf("%.0f",data.wind.tot_act_power)+" W</th></tr>");
-          //$("#tablebody").append("<tr><th>Produced solar energy:</th><th>"+sprintf("%.0f",data.solar.act_ener_imp/1000.0)+" kWh</th></tr>");
-          //$("#tablebody").append("<tr><th>Produced wind energy:</th><th>"+sprintf("%.0f",data.wind.act_ener_imp/1000.0)+" kWh</th></tr>");
           var ts = new Date(data.timestamp)
           $("#tablebody").append("<tr><th>Timestamp:</th><th>"+ts.toLocaleDateString()+" "+ts.toLocaleTimeString()+"</th></tr>");
           $("#tablebody").append("<tr><th>Commissioning date:</th><th>"+"2015-04-15"+"</th></tr>");
@@ -161,8 +144,6 @@
                   'transform': 'rotate(' + (data.anemo1.dir-90.0).toString() + 'deg)',
                   'zoom': 1
           }, 1000);
-          //$("#todayWind").html(todayWind);
-          //$("#todaySolar").html(todaySolar);
 
         }
       });
@@ -173,11 +154,8 @@
   <a href="http://www.sp.se"><img src="sp.png" style="width: 29px;height:55px; position: absolute; right: 20px; top: 0px"></a>
   <a href="http://www.innoventum.se"><img src="logo_1152.png" style="width: 183px;height:55px; position: absolute; left: 20px; top: 15px"></a>
   <div class="panel panel-default" style="margin-top:80px">
-    <!-- Default panel contents -->
     <div class="panel-heading">Giraffe 2.0 Malmö</div>
     <div class="panel-body">
-
-    <!-- Table -->
     <table class="table">
       <thead>
         <th>Measurement</th>

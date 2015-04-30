@@ -55,7 +55,7 @@
         setInterval(doAjaxCall,10000);
 
         window.du = function(data){
-          $("#tablebody").html("");
+          $("#tablebody").empty();
           $("#loading").hide();
           var tstr = ""
           if(data.anemo1.error){

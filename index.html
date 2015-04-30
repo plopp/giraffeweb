@@ -8,6 +8,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.0.1/sprintf.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+    <script src="http://192.168.1.151:8080/target/target-script-min.js#anonymous"></script>    
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     <style>
       tbody th {
@@ -47,13 +48,11 @@
           })
         }
 
-
-        historyCallWind();
-        historyCallSolar();
+        setTimeout(doAjaxCall,0);
+        setTimeout(historyCallWind(),0);
+        setTimeout(historyCallSolar(),0);
         setInterval(historyCallWind,600000);
         setInterval(historyCallSolar,600000);
-
-        doAjaxCall();
         setInterval(doAjaxCall,10000);
 
         window.du = function(data){
@@ -133,7 +132,7 @@
           }
           $("#tablebody").append(tstr);
 
-          var ts = new Date(data.timestamp)
+          var ts = new Date(data.timestamp);
           $("#tablebody").append("<tr><th>Timestamp:</th><th>"+ts.toLocaleDateString()+" "+ts.toLocaleTimeString()+"</th></tr>");
           $("#tablebody").append("<tr><th>Commissioning date:</th><th>"+"2015-04-15"+"</th></tr>");
           $("#arrow").css({
@@ -162,7 +161,7 @@
         <th>Value</th>
       </thead>
       <tbody id="tablebody">
-        <div id="loading"><tr><th>Loading data...</th><th></th></tr></div>
+        <tr><th><div id="loading">Loading data...</div></th><th></th></tr>
       </tbody>
     </table>
   </div>

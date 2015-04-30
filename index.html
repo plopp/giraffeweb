@@ -4,11 +4,11 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>InnoVentum Giraffe 2.0 Malmö</title>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>    
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>    
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.0.1/sprintf.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <style>
       tbody th {
         font-weight: normal;
@@ -17,56 +17,32 @@
     <script>
       $(function() {
         
-        var doAjaxCall = function(url,label){
-          $.ajax({
-            url: "/data",
-            success: function(data,jhqr,error){
-                du(data);
-            }
-          })
-        }
 	var todayWind = 0;
-        var historyCallWind = function(data,jhqr,error){
-          $.ajax({
-            url: '/history?reduce=True&group_level=4&descending=True&startkey=["wind",{},{},{}]&endkey=["solar",{},{},{}]',
-            mimeType: 'application/json',
-            success: function(data,jhqr,error){
-                todayWind = data.rows[0].value.min;
-            }
-          })
-        }
-
         var todaySolar = 0;
-        var historyCallSolar = function(data,jhqr,error){
-          $.ajax({
-            url: '/history?reduce=True&group_level=4&descending=True&startkey=["solar",{},{},{}]',
-            mimeType: 'application/json',
-            success: function(data,jhqr,error){
-                todaySolar = data.rows[0].value.min;
-            }
-          })
-        }
 
-        setTimeout(doAjaxCall,0);
-        setTimeout(historyCallWind(),0);
-        setTimeout(historyCallSolar(),0);
-        setInterval(historyCallWind,600000);
-        setInterval(historyCallSolar,600000);
-        setInterval(doAjaxCall,10000);
+        var update = function(){
+	  $.when(
+	    $.ajax({url:'/history?reduce=True&group_level=4&descending=True&startkey=["solar",{},{},{}]',mimeType: 'application/json',cache: false}),
+	    $.ajax({url: '/history?reduce=True&group_level=4&descending=True&startkey=["wind",{},{},{}]&endkey=["solar",{},{},{}]',cache: false,mimeType: 'application/json'}),
+	    $.ajax({url: "/data",cache: false,dataType: "json"})).then(function(a3,a2,a1){
+            todaySolar = a3[0].rows[0].value.min;
+	    todayWind = a2[0].rows[0].value.min;
+            du(a1[0]);
+	    setTimeout(update,10000);
+	  });
+	}
+	update();
 
-        window.du = function(data){
+        var du = function(data){
           $("#tablebody").empty();
           $("#loading").hide();
-          var tstr = ""
+          var tstr = "<tbody id='tablebody'>"
           if(data.anemo1.error){
               tstr += "<tr><th>Wind speed:</th><th>"+sprintf("%.1f",data.anemo1.speed)+" m/s <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
           }
           else{
               tstr += "<tr><th>Wind speed:</th><th>"+sprintf("%.1f",data.anemo1.speed)+" m/s</th></tr>";
           }
-          $("#tablebody").append(tstr);
-
-          tstr = "";
 
           if(data.anemo1.error){
               tstr += "<tr><th>Air pressure:</th><th>"+sprintf("%.1f",data.anemo1.pressure)+" hPa <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
@@ -74,9 +50,6 @@
           else{
               tstr += "<tr><th>Air pressure:</th><th>"+sprintf("%.1f",data.anemo1.pressure)+" hPa</th></tr>";
           }
-          $("#tablebody").append(tstr);
-
-          tstr = "";
 
           if(data.anemo1.error){
               tstr += "<tr><th>Air temperature:</th><th>"+sprintf("%.1f",data.anemo1.tempp)+" °C <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
@@ -84,9 +57,6 @@
           else{
               tstr += "<tr><th>Air temperature:</th><th>"+sprintf("%.1f",data.anemo1.tempp)+" °C</th></tr>";
           }
-          $("#tablebody").append(tstr);
-
-          tstr = "";
 
           if(data.anemo1.error){
               tstr += "<tr><th>Wind direction:</th><th>"+sprintf("%.1f",data.anemo1.dir)+"° <i id='arrow' class='glyphicon glyphicon-arrow-left' aria-hidden='true'></i> <span id='arrow' style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
@@ -94,9 +64,6 @@
           else{
               tstr += "<tr><th>Wind direction:</th><th>"+sprintf("%.1f",data.anemo1.dir)+"° <i id='arrow' class='glyphicon glyphicon-arrow-left' aria-hidden='true'></i></th></tr>";
           }
-          $("#tablebody").append(tstr);
-
-          tstr = "";
 
           if(data.pyro.error){
               tstr += "<tr><th>Sun insolation:</th><th>"+sprintf("%.1f",data.pyro.radiance)+" W/m² <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
@@ -104,9 +71,6 @@
           else{
               tstr += "<tr><th>Sun insolation:</th><th>"+sprintf("%.1f",data.pyro.radiance)+" W/m²</th></tr>";
           }
-          $("#tablebody").append(tstr);
-
-          tstr = "";
 
           if(data.solar.error){
               tstr += "<tr><th>Solar power:</th><th>"+sprintf("%.0f",data.solar.tot_act_power)+" W <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
@@ -116,9 +80,6 @@
               tstr += "<tr><th>Solar power:</th><th>"+sprintf("%.0f",data.solar.tot_act_power)+" W</th></tr>";
               tstr += "<tr><th>Produced solar energy:</th><th>"+sprintf("%.1f (%.1f today) kWh",data.solar.act_ener_imp/1000.0,(data.solar.act_ener_imp-todaySolar)/1000.0)+"</th></tr>";
           }
-          $("#tablebody").append(tstr);
-
-          tstr = "";
 
           if(data.wind.error){
               tstr += "<tr><th>Wind power:</th><th>"+sprintf("%.0f",data.wind.tot_act_power)+" W <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
@@ -126,14 +87,14 @@
           }
           else{
               tstr += "<tr><th>Wind power:</th><th>"+sprintf("%.0f",data.wind.tot_act_power)+" W</th></tr>";
-              tstr += "<tr><th>Produced wind energy:</th><th>"+sprintf("%.1f (%.1f today) kWh",data.wind.act_ener_imp/1000.0,(data.wind.act_ener_imp-todayWind)/1000.0)+"</th></tr>"
+              tstr += "<tr><th>Produced wind energy:</th><th>"+sprintf("%.1f (%.1f today) kWh",data.wind.act_ener_imp/1000.0,(data.wind.act_ener_imp-todayWind)/1000.0)+"</th></tr>";
               
           }
-          $("#tablebody").append(tstr);
 
           var ts = new Date(data.timestamp);
-          $("#tablebody").append("<tr><th>Timestamp:</th><th>"+ts.toLocaleDateString()+" "+ts.toLocaleTimeString()+"</th></tr>");
-          $("#tablebody").append("<tr><th>Commissioning date:</th><th>"+"2015-04-15"+"</th></tr>");
+          tstr += "<tr><th>Timestamp:</th><th>"+ts.toLocaleDateString()+" "+ts.toLocaleTimeString()+"</th></tr>";
+          tstr += "<tr><th>Commissioning date:</th><th>"+"2015-04-15"+"</th></tr></tbody>";
+	  $("#tablebody").replaceWith(tstr);
           $("#arrow").css({
                   '-webkit-transform': 'rotate(' + (data.anemo1.dir-90.0).toString() + 'deg)',
                   '-moz-transform': 'rotate(' + (data.anemo1.dir-90.0).toString() + 'deg)',
@@ -142,7 +103,6 @@
                   'transform': 'rotate(' + (data.anemo1.dir-90.0).toString() + 'deg)',
                   'zoom': 1
           }, 1000);
-
         }
       });
     </script>
@@ -154,16 +114,16 @@
   <div class="panel panel-default" style="margin-top:80px">
     <div class="panel-heading">Giraffe 2.0 Malmö</div>
     <div class="panel-body">
-    <table class="table">
-      <thead>
-        <th>Measurement</th>
-        <th>Value</th>
-      </thead>
-      <tbody id="tablebody">
-        <tr><th><div id="loading">Loading data...</div></th><th></th></tr>
-      </tbody>
-    </table>
-  </div>
+      <table class="table">
+        <thead>
+          <th>Measurement</th>
+          <th>Value</th>
+        </thead>
+        <tbody id="tablebody">
+          <tr><th><div id="loading">Loading data...</div></th><th></th></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
   <div class="well well-sm">Created by: <a href="mailto:marcus.kempe@sp.se">Marcus Kempe</a>, SP Technical Research Institute of Sweden.</div>
   </body>

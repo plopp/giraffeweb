@@ -16,17 +16,22 @@
     </style>
     <script>
       $(function() {
-        
-	var todayWind = 0;
+
+        var DEBUG = false;    // False in production. True on local machine.
+        var prefix = DEBUG ? "http://giraffe.forskningsdata.se" : "";
+
+        var commissioning_date = 1429117200 * 1000; // 15 April 2015
+        var average_daily_production = 0;
+        var todayWind = 0;
         var todaySolar = 0;
 
         var update = function(){
 	  $.when(
-	    $.ajax({url:'/history?reduce=True&group_level=4&descending=True&startkey=["solar",{},{},{}]',mimeType: 'application/json',cache: false}),
-	    $.ajax({url: '/history?reduce=True&group_level=4&descending=True&startkey=["wind",{},{},{}]&endkey=["solar",{},{},{}]',cache: false,mimeType: 'application/json'}),
-	    $.ajax({url: "/data",cache: false,dataType: "json"})).then(function(a3,a2,a1){
+	    $.ajax({url: prefix + '/history?reduce=True&group_level=4&descending=True&startkey=["solar",{},{},{}]',mimeType: 'application/json',cache: false}),
+	    $.ajax({url: prefix + '/history?reduce=True&group_level=4&descending=True&startkey=["wind",{},{},{}]&endkey=["solar",{},{},{}]',cache: false,mimeType: 'application/json'}),
+	    $.ajax({url: prefix + "/data",cache: false,dataType: "json"})).then(function(a3,a2,a1){
             todaySolar = a3[0].rows[0].value.min;
-	    todayWind = a2[0].rows[0].value.min;
+	        todayWind = a2[0].rows[0].value.min;
             du(a1[0]);
 	    setTimeout(update,10000);
 	  });
@@ -88,12 +93,21 @@
           else{
               tstr += "<tr><th>Wind power:</th><th>"+sprintf("%.0f",data.wind.tot_act_power)+" W</th></tr>";
               tstr += "<tr><th>Produced wind energy:</th><th>"+sprintf("%.1f (%.1f today) kWh",data.wind.act_ener_imp/1000.0,(data.wind.act_ener_imp-todayWind)/1000.0)+"</th></tr>";
-              
           }
 
           var ts = new Date(data.timestamp);
+
+          if(data.solar.error || data.wind.error){
+              // Exclude average production data if errros are reported.
+          }
+          else{
+              average_daily_production = (data.solar.act_ener_imp + data.wind.act_ener_imp)/1000.0 / ((ts - commissioning_date)/1000/60/60/24)
+              tstr += "<tr><th>Solar + Wind average daily energy:</th><th>"+sprintf("%.1f", average_daily_production)+" kWh/day</th></tr>";
+              tstr += "<tr><th>Solar + Wind extrapolated annual energy:</th><th>"+sprintf("%.0f", average_daily_production * 365)+" kWh/year</th></tr>";
+          }
+
           tstr += "<tr><th>Timestamp:</th><th>"+ts.toLocaleDateString()+" "+ts.toLocaleTimeString()+"</th></tr>";
-          tstr += "<tr><th>Commissioning date:</th><th>"+"2015-04-15"+"</th></tr></tbody>";
+          tstr += "<tr><th>Commissioning date:</th><th>"+new Date(commissioning_date).toLocaleDateString()+"</th></tr></tbody>";
 	  $("#tablebody").replaceWith(tstr);
           $("#arrow").css({
                   '-webkit-transform': 'rotate(' + (data.anemo1.dir-90.0).toString() + 'deg)',

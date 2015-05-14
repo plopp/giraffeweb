@@ -59,7 +59,6 @@
 	      T1 = 1.07*T+274.5;
 	  }
 	  var air_press_sea_level = data.anemo1.pressure*Math.pow(Math.E,(H*B/T1));
-          console.log(air_press_sea_level);
           var tstr = "<tbody id='tablebody'>"
           if(data.anemo1.error){
               tstr += "<tr><th>Wind speed:</th><th>"+sprintf("%.1f",data.anemo1.speed)+" m/s <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";

@@ -13,11 +13,14 @@
       tbody th {
         font-weight: normal;
       }
+      table {
+        margin-bottom: 0px !important;
+      }
     </style>
     <script>
       $(function() {
 
-        var DEBUG = false;    // False in production. True on local machine.
+        var DEBUG = true;    // False in production. True on local machine.
         var prefix = DEBUG ? "http://giraffe.forskningsdata.se" : "";
 
         var commissioning_date = 1429117200 * 1000; // 15 April 2015
@@ -41,6 +44,22 @@
         var du = function(data){
           $("#tablebody").empty();
           $("#loading").hide();
+	  var H = 13.0; //Height above sea level
+	  var L = 55.620503; //Latitude in degrees
+	  var B = 0.034163*(1.0-0.0026373*Math.cos(2*L));
+	  var T = data.anemo1.tempp;
+          var T1 = 1.0;
+	  if(T < -7.0){
+	      T1 = 0.535*T+275.6;
+	  }
+	  else if(T >= -7.0 && T < 2.0){
+	      T1 = 0.500*T+275.0;
+	  }
+	  else if(T >= 2.0){
+	      T1 = 1.07*T+274.5;
+	  }
+	  var air_press_sea_level = data.anemo1.pressure*Math.pow(Math.E,(H*B/T1));
+          console.log(air_press_sea_level);
           var tstr = "<tbody id='tablebody'>"
           if(data.anemo1.error){
               tstr += "<tr><th>Wind speed:</th><th>"+sprintf("%.1f",data.anemo1.speed)+" m/s <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
@@ -53,7 +72,7 @@
               tstr += "<tr><th>Air pressure:</th><th>"+sprintf("%.1f",data.anemo1.pressure)+" hPa <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
           }
           else{
-              tstr += "<tr><th>Air pressure:</th><th>"+sprintf("%.1f",data.anemo1.pressure)+" hPa</th></tr>";
+              tstr += "<tr><th>Air pressure:</th><th>"+sprintf("%.1f",data.anemo1.pressure)+" hPa "+sprintf("(%.1f hPa at sea level)",air_press_sea_level)+"</th></tr>";
           }
 
           if(data.anemo1.error){

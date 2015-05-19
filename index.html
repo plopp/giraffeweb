@@ -27,6 +27,7 @@
         var average_daily_production = 0;
         var todayWind = 0;
         var todaySolar = 0;
+        var display_error_rows = true;
 
         var update = function(){
 	  $.when(
@@ -61,35 +62,45 @@
 	  var air_press_sea_level = data.anemo1.pressure*Math.pow(Math.E,(H*B/T1));
           var tstr = "<tbody id='tablebody'>"
           if(data.anemo1.error){
+            if(display_error_rows){
               tstr += "<tr><th>Wind speed:</th><th>"+sprintf("%.1f",data.anemo1.speed)+" m/s <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
+            }
           }
           else{
               tstr += "<tr><th>Wind speed:</th><th>"+sprintf("%.1f",data.anemo1.speed)+" m/s</th></tr>";
           }
 
           if(data.anemo1.error){
+            if(display_error_rows){
               tstr += "<tr><th>Air pressure:</th><th>"+sprintf("%.1f",data.anemo1.pressure)+" hPa <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
+            }
           }
           else{
               tstr += "<tr><th>Air pressure:</th><th>"+sprintf("%.1f",data.anemo1.pressure)+" hPa "+sprintf("(%.1f hPa at sea level)",air_press_sea_level)+"</th></tr>";
           }
 
           if(data.anemo1.error){
+            if(display_error_rows){
               tstr += "<tr><th>Air temperature:</th><th>"+sprintf("%.1f",data.anemo1.tempp)+" °C <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
+            }
           }
           else{
               tstr += "<tr><th>Air temperature:</th><th>"+sprintf("%.1f",data.anemo1.tempp)+" °C</th></tr>";
           }
 
           if(data.anemo1.error){
+            if(display_error_rows){
               tstr += "<tr><th>Wind direction:</th><th>"+sprintf("%.1f",data.anemo1.dir)+"° <i id='arrow' class='glyphicon glyphicon-arrow-left' aria-hidden='true'></i> <span id='arrow' style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
+            }
           }
           else{
               tstr += "<tr><th>Wind direction:</th><th>"+sprintf("%.1f",data.anemo1.dir)+"° <i id='arrow' class='glyphicon glyphicon-arrow-left' aria-hidden='true'></i></th></tr>";
           }
 
           if(data.pyro.error){
+            if(display_error_rows){
               tstr += "<tr><th>Sun insolation:</th><th>"+sprintf("%.1f",data.pyro.radiance)+" W/m² <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
+            }
           }
           else{
               tstr += "<tr><th>Sun insolation:</th><th>"+sprintf("%.1f",data.pyro.radiance)+" W/m²</th></tr>";

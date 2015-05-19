@@ -20,14 +20,14 @@
     <script>
       $(function() {
 
-        var DEBUG = true;    // False in production. True on local machine.
+        var DEBUG = false;    // False in production. True on local machine.
         var prefix = DEBUG ? "http://giraffe.forskningsdata.se" : "";
 
         var commissioning_date = 1429117200 * 1000; // 15 April 2015
         var average_daily_production = 0;
         var todayWind = 0;
         var todaySolar = 0;
-        var display_error_rows = true;
+        var display_error_rows = false;
 
         var update = function(){
 	  $.when(

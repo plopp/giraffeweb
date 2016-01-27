@@ -65,6 +65,9 @@
             if(display_error_rows){
               tstr += "<tr><th>Wind speed:</th><th>"+sprintf("%.1f",data.anemo1.speed)+" m/s <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
             }
+            else{
+              tstr += "<tr><th>Wind speed:</th><th>"+sprintf("%.1f",data.anemo4.speed)+" m/s <span style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>"; 
+            }
           }
           else{
               tstr += "<tr><th>Wind speed:</th><th>"+sprintf("%.1f",data.anemo1.speed)+" m/s</th></tr>";
@@ -91,6 +94,9 @@
           if(data.anemo1.error){
             if(display_error_rows){
               tstr += "<tr><th>Wind direction:</th><th>"+sprintf("%.1f",data.anemo1.dir)+"° <i id='arrow' class='glyphicon glyphicon-arrow-left' aria-hidden='true'></i> <span id='arrow' style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
+            }
+            else{
+              tstr += "<tr><th>Wind direction:</th><th>"+sprintf("%.1f",data.anemo4.dir)+"° <i id='arrow' class='glyphicon glyphicon-arrow-left' aria-hidden='true'></i> <span id='arrow' style='color:red' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th></tr>";
             }
           }
           else{
